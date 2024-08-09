@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import os
+import matplotlib.pyplot as plt
 
 def show_csv_files():
     files = []
@@ -65,7 +66,47 @@ def calculate_Ppr_Tpr(method,yi_data,Pci_data,Tci_data,SG,Pressure,Temp):
     # print(Pressure, Ppc,Ppr,Tpr)
     return (Ppr,Tpr)
 
-def calculate_z():
+def show_graph():
+        
+        pressure_file_name = pressure_combobox.get()
+        presssure_data_file = open(pressure_file_name,"r")
+        pressure_csv_reader = csv.reader(presssure_data_file)
+
+        pressure = []
+        temp = []
+        z = []
+
+        for i in pressure_csv_reader:
+            pressure.append(i[0])
+            temp.append(i[1])
+        pressure.pop(0)
+        temp.pop(0)
+
+        pressure = np.array(pressure)
+        temp = np.array(temp)
+
+        pressure = pressure.astype(float)
+        temp = temp.astype(float)
+
+    
+        # print(pressure,temp)
+        for i,j in zip(pressure,temp):
+            # print(i,j)
+            zi = calculate_z(i,j)
+            z.append(zi)
+        # print(z)
+        z = np.array(z)
+
+        plt.plot(z,pressure)
+        plt.xlabel("z-factor")
+        plt.ylabel("Pressure (pa)")
+        plt.show()
+
+                
+
+
+
+def calculate_z(P,T):
     try:
         comp_file_name = data_combobox.get()
         if(comp_file_name.endswith(".csv") ):
@@ -114,8 +155,8 @@ def calculate_z():
             else:
                 messagebox.showerror("Error","Select valid method.")
 
-            P = pressure_entry.get()
-            T = temp_entry.get()
+            # P = pressure_entry.get()
+            # T = temp_entry.get()
 
             if(not (P == "" and T == "")):
                 try:
@@ -130,7 +171,7 @@ def calculate_z():
                     C = tr*(90.7 - 242.2*tr + 42.4*(tr**2))
                     D = 2.18 + 2.82*tr
                     y = float(y_entry.get())
-
+                    # print(A,B,C,D,y)
                     while True:
                         fy = ((y + y**2 + y**3 - y**4)/((1-y)**3)) - A*Ppr - B*(y**2) + C*(y**D)
                         dfy = ((1 + 4*y + 4*(y**2) - 4*(y**3) + y**4 )/((1 - y)**4))  - 2*B*y + C*D*(y**(D-1))
@@ -141,10 +182,10 @@ def calculate_z():
                             break
                     
                     rho = (SG*mol_wt_air*P)/(8.314*T*z*1000000)
-                    rho_label.config(text="Value of Gas density is: {} g/cm3".format(rho))
-                    z_label.config(text="Value of Z is: {}".format(z))
+                    rho_label.config(text=" Value of Gas density is: {} g/cm3".format(rho))
+                    z_label.config(text=" Value of Z is: {}".format(z))
 
-                    # print(z)
+                    return z
                     
                 except:
                     messagebox.showerror("Error", "Please enter valid data")
@@ -199,6 +240,13 @@ method_combobox = ttk.Combobox(win, values=method_options, state="readonly")
 method_combobox.set("Select any one")  
 method_combobox.grid(row=2, column=2 )
 
+pressure_label =  Label(win,text="Select pressure data")
+pressure_label.grid(row=1,column=3 )
+pressure_options = show_csv_files()
+pressure_combobox = ttk.Combobox(win, values=pressure_options, state="readonly")
+pressure_combobox.set("Select any one")  
+pressure_combobox.grid(row=2, column=3 )
+
 data_label =  Label(win,text="Select CSV datafile")
 data_label.grid(row=4,column=2 )
 data_options = show_csv_files()
@@ -209,15 +257,20 @@ data_combobox.grid(row=5, column=2)
 
 empty_label = Label(win)
 empty_label.grid(row=6, column = 0)
-start_button = Button(win,text="Calculate Z",command=calculate_z)
-start_button.grid(row=4,column=3,padx=20)
+
+P = pressure_entry.get()
+T = temp_entry.get()
+
+start_button = Button(win,text="Calculate Z",command=lambda: calculate_z(P,T))
+start_button.grid(row=5,column=3,padx=20)
 
 rho_label =  Label(win)
-rho_label.grid(row=2,column=3)
+rho_label.grid(row=2,column=4)
 
 z_label =  Label(win)
-z_label.grid(row=3,column=3)
+z_label.grid(row=3,column=4)
 
-
+graph_button = Button(win,text="Show Graph",command=show_graph)
+graph_button.grid(row=5,column=4,padx=20)
 
 win.mainloop()
