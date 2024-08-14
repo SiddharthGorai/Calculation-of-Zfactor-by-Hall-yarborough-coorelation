@@ -166,18 +166,19 @@ def calculate_z(P,T):
                     Tpr = calculate_Ppr_Tpr(method,yi_data,Pci_data,Tci_data,SG,P,T)[1]
                     # Hall-Yarborough Parameters
                     tr = (1/Tpr)
-                    A = 0.06125*np.power(np.e,-1.2*(1-tr**2))
-                    B = tr*(14.96 - 9.76*tr + 4.58*(tr**2))
+                    A = 0.06125*np.power(np.e,-1.2*((1-tr)**2))*tr
+                    B = tr*(14.76 - 9.76*tr + 4.58*(tr**2))
                     C = tr*(90.7 - 242.2*tr + 42.4*(tr**2))
                     D = 2.18 + 2.82*tr
                     y = float(y_entry.get())
-                    # print(A,B,C,D,y)
+                    # print(tr,A,B,C,D,y)
                     while True:
                         fy = ((y + y**2 + y**3 - y**4)/((1-y)**3)) - A*Ppr - B*(y**2) + C*(y**D)
                         dfy = ((1 + 4*y + 4*(y**2) - 4*(y**3) + y**4 )/((1 - y)**4))  - 2*B*y + C*D*(y**(D-1))
                         zi = A*Ppr/y
                         y = y - fy/dfy
                         z = A*Ppr/y
+                        # print(fy)
                         if(abs(zi - z) < (10**-5)):
                             break
                     
