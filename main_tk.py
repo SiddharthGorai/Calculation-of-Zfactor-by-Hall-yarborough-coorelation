@@ -181,8 +181,10 @@ def calculate_z(P,T):
                         # print(fy)
                         if(abs(zi - z) < (10**-5)):
                             break
+                    mol_wt_air_in_kgpermol = mol_wt_air / 1000
                     
-                    rho = (SG*mol_wt_air*P)/(8.314*T*z*1000000)
+                    rho = (SG*mol_wt_air_in_kgpermol*P)/(8.314*T*z) # kg/m3
+                    rho = rho / 1000 # g/cc
                     rho_label.config(text=" Value of Gas density is: {} g/cm3".format(rho))
                     z_label.config(text=" Value of Z is: {}".format(z))
 
