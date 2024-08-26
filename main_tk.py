@@ -90,16 +90,16 @@ def show_graph():
 
     
         # print(pressure,temp)
-        for i,j in zip(pressure,temp):
+        for p,t in zip(pressure,temp):
             # print(i,j)
-            zi = calculate_z(i,j)
+            zi = calculate_z(p,t)
             z.append(zi)
         # print(z)
         z = np.array(z)
 
-        plt.plot(z,pressure)
-        plt.xlabel("z-factor")
-        plt.ylabel("Pressure (pa)")
+        plt.scatter(pressure,z, marker='o')
+        plt.ylabel("z-factor")
+        plt.xlabel("Pressure (pa)")
         plt.show()
 
                 
@@ -171,7 +171,6 @@ def calculate_z(P,T):
                     C = tr*(90.7 - 242.2*tr + 42.4*(tr**2))
                     D = 2.18 + 2.82*tr
                     y = float(y_entry.get())
-                    # print(tr,A,B,C,D,y)
                     while True:
                         fy = ((y + y**2 + y**3 - y**4)/((1-y)**3)) - A*Ppr - B*(y**2) + C*(y**D)
                         dfy = ((1 + 4*y + 4*(y**2) - 4*(y**3) + y**4 )/((1 - y)**4))  - 2*B*y + C*D*(y**(D-1))
@@ -243,12 +242,12 @@ method_combobox = ttk.Combobox(win, values=method_options, state="readonly")
 method_combobox.set("Select any one")  
 method_combobox.grid(row=2, column=2 )
 
-pressure_label =  Label(win,text="Select pressure data")
-pressure_label.grid(row=1,column=3 )
-pressure_options = show_csv_files()
-pressure_combobox = ttk.Combobox(win, values=pressure_options, state="readonly")
-pressure_combobox.set("Select any one")  
-pressure_combobox.grid(row=2, column=3 )
+# pressure_label =  Label(win,text="Select pressure data")
+# pressure_label.grid(row=1,column=3 )
+# pressure_options = show_csv_files()
+# pressure_combobox = ttk.Combobox(win, values=pressure_options, state="readonly")
+# pressure_combobox.set("Select any one")  
+# pressure_combobox.grid(row=2, column=3 )
 
 data_label =  Label(win,text="Select CSV datafile")
 data_label.grid(row=4,column=2 )
@@ -273,7 +272,7 @@ rho_label.grid(row=2,column=4)
 z_label =  Label(win)
 z_label.grid(row=3,column=4)
 
-graph_button = Button(win,text="Show Graph",command=show_graph)
-graph_button.grid(row=5,column=4,padx=20)
+# graph_button = Button(win,text="Show Z/P Graph",command=show_graph)
+# graph_button.grid(row=5,column=4,padx=20)
 
 win.mainloop()
